@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
   @State private var showFact = false
+  @Namespace private var animation
   
   var body: some View {
     GeometryReader { geo in
@@ -26,25 +27,34 @@ struct ContentView: View {
               .foregroundStyle(Color("backgroundColor"))
           }
           
-          Image(systemName: showFact ? "chevron.down" : "chevron.up")
-            .font(.title)
-            .fontWeight(.medium)
-            .foregroundStyle(Color("backgroundColor"))
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
-            .padding(.bottom)
+          if showFact {
+            chevronImage("down")
+          } else {
+            chevronImage("up")
+          }
         }
         .frame(width: !showFact ? geo.size.width / 1.9: geo.size.width - 50, height: !showFact ? geo.size.width / 1.9: geo.size.width - 50)
         .offset(y: showFact ? (-geo.frame(in: .local).midY - safeAreaOffset) : 0)
         .onTapGesture {
-          withAnimation(.smooth(duration: 0.5, extraBounce: 0.1)) {
+          withAnimation(.smooth(duration: 0.65, extraBounce: 0.1)) {
             showFact.toggle()
           }
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    .background(Color("backgroundColor"))
-    
+    .background(Color("backgroundColor").gradient)
+  }
+  
+  @ViewBuilder
+  func chevronImage(_ type: String) -> some View {
+    Image(systemName: "chevron.\(type)")
+      .font(.title)
+      .fontWeight(.medium)
+      .foregroundStyle(Color("backgroundColor"))
+      .matchedGeometryEffect(id: "image", in: animation)
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+      .padding(.bottom)
   }
 }
 
