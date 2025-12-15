@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
   @State private var showFact = false
+  @State private var offsetFactor = 0.0
+  @State private var opacityFactor = 0.0
   @Namespace private var animation
   
   var body: some View {
@@ -31,17 +33,32 @@ struct ContentView: View {
             chevronImage("down")
           } else {
             chevronImage("up")
+              .opacity(1 - opacityFactor)
+              .offset(y: offsetFactor)
           }
         }
         .frame(width: !showFact ? geo.size.width / 1.9: geo.size.width - 50, height: !showFact ? geo.size.width / 1.9: geo.size.width - 50)
         .offset(y: showFact ? (-geo.frame(in: .local).midY - safeAreaOffset) : 0)
         .onTapGesture {
+          
           withAnimation(.smooth(duration: 0.65, extraBounce: 0.1)) {
             showFact.toggle()
           }
+          
+          withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: false)) {
+            offsetFactor = showFact ? 0.0 : -19.0
+            opacityFactor = showFact ? 0.0 : 1.0
+          }
+          
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
+      .onAppear {
+        withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: false)) {
+          offsetFactor =  -19.0
+          opacityFactor = 1.0
+        }
+      }
     }
     .background(Color("backgroundColor").gradient)
   }
